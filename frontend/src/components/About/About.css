@@ -1,0 +1,180 @@
+.about-section {
+    padding: 5rem 0;
+    background-color: #fdfbf7;
+    border-top: 1px solid #f0e6d6;
+    border-bottom: 1px solid #f0e6d6;
+    scroll-margin-top: 80px;
+    width: 100%;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 3.5rem;
+    align-items: center;
+}
+
+.about-subtitle {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--secondary-color, #e91e63);
+    text-transform: uppercase;
+}
+
+.about-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #222;
+    margin: 0.6rem 0 1.25rem;
+    line-height: 1.25;
+    font-family: 'Inter', sans-serif;
+}
+
+.about-description {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+}
+
+.about-highlights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.highlight-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.highlight-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background-color: #f6ebd8;
+    color: var(--primary-color, #8b4513);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.highlight-item h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 0.2rem;
+}
+
+.highlight-item p {
+    font-size: 0.82rem;
+    color: #666;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Visual Side */
+.about-visual {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.about-card-box {
+    background: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    border: 1px solid #eadbca;
+    box-shadow: 0 10px 30px rgba(139, 69, 19, 0.08);
+}
+
+.about-card-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-color, #8b4513);
+    margin-bottom: 1.25rem;
+}
+
+.about-card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.about-card-list li {
+    font-size: 0.95rem;
+    color: #444;
+    font-weight: 500;
+}
+
+.about-badge-card {
+    background: linear-gradient(135deg, #8b4513 0%, #4a0d0d 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(74, 13, 13, 0.25);
+}
+
+.badge-years {
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.badge-text {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.9;
+    margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .about-highlights {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .about-section {
+        padding: 2.75rem 0;
+    }
+
+    .about-title {
+        font-size: 1.65rem;
+    }
+
+    .about-description {
+        font-size: 0.95rem;
+    }
+
+    .about-card-box {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .about-badge-card {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .badge-years {
+        font-size: 2.1rem;
+    }
+}

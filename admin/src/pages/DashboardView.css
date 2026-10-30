@@ -1,0 +1,463 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+}
+
+.kpi-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.kpi-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-card.revenue .kpi-icon-box {
+  background-color: #fdf5eb;
+  color: var(--primary-color);
+}
+
+.kpi-card.orders .kpi-icon-box {
+  background-color: #fce7f3;
+  color: var(--secondary-color);
+}
+
+.kpi-card.products .kpi-icon-box {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.kpi-card.dispatch .kpi-icon-box {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+}
+
+.kpi-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0.15rem 0 0.2rem;
+}
+
+.kpi-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.kpi-trend.positive {
+  color: #16a34a;
+}
+
+.kpi-subtext {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1.1fr;
+  gap: 1.5rem;
+}
+
+.dash-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.dash-card-header h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 0.2rem;
+}
+
+.dash-card-header p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.view-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  background-color: #fdf5eb;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.view-all-btn:hover {
+  background-color: #fce8d5;
+}
+
+/* Table */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.dash-table th {
+  padding: 0.75rem 1rem;
+  background-color: #fafafa;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dash-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f1f3f5;
+  color: var(--text-main);
+}
+
+.dash-table tr:hover {
+  background-color: #fbfbfb;
+}
+
+.bold-id {
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.customer-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-cell strong {
+  font-weight: 700;
+}
+
+.customer-cell span {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.district-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background-color: #f3f4f6;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.amount-cell {
+  font-weight: 800;
+  color: var(--maroon);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.status-badge.confirmed {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.status-badge.packed {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.status-badge.transit {
+  background-color: #fae8ff;
+  color: #a21caf;
+}
+
+.status-badge.out {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.status-badge.delivered {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.action-btn {
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #fdf5eb;
+  border-color: #fae1c3;
+}
+
+/* Tamil Nadu District Dispatch */
+.district-sales-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.district-stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.district-stat-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.dist-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.dist-icon {
+  color: var(--primary-color);
+}
+
+.dist-amount {
+  font-weight: 700;
+  color: var(--maroon);
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 7px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.hub-info-box {
+  margin-top: auto;
+  padding: 0.85rem 1rem;
+  background-color: #fdfaf6;
+  border: 1px solid #fae8d4;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.hub-check-icon {
+  color: #16a34a;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.hub-info-text strong {
+  font-size: 0.88rem;
+  color: var(--text-main);
+  display: block;
+}
+
+.hub-info-text p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 2px 0 0;
+}
+
+/* Live Phone OTP Quick Action Bar */
+.dash-otp-quickbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, #fdf8f0 0%, #fffbf2 100%);
+  border: 1px solid #f9e2c4;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(139, 69, 19, 0.04);
+  transition: all 0.2s ease;
+}
+
+.dash-otp-quickbar:hover {
+  transform: translateY(-1px);
+  border-color: #e5b98a;
+  box-shadow: 0 4px 12px rgba(139, 69, 19, 0.08);
+}
+
+.dash-otp-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dash-otp-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: #8b4513;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-otp-text h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #5c2d0c;
+  margin: 0 0 0.2rem 0;
+}
+
+.dash-otp-text p {
+  font-size: 0.8rem;
+  color: #8b5a38;
+  margin: 0;
+}
+
+.dash-otp-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.dash-otp-count-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #065f46;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.dash-otp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #8b4513;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.dash-otp-btn:hover {
+  background-color: #6d330c;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-card {
+    padding: 1rem 1.1rem;
+  }
+
+  .dash-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+

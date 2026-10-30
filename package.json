@@ -1,0 +1,15 @@
+{
+  "name": "vr-nuts-suite",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "admin": "npm run dev --prefix admin",
+    "server": "npm run dev --prefix server",
+    "dev:all": "node scripts/startAll.js",
+    "build": "npm run build --prefix frontend && npm run build --prefix admin",
+    "db:migrate": "npm run db:migrate --prefix server"
+  }
+}
+
