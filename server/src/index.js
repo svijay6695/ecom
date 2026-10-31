@@ -23,6 +23,8 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
   'http://127.0.0.1:3000',
+  'https://vpnuts.vercel.app',
+  'https://admin-vpnuts.vercel.app',
   ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(u => u.trim()) : []),
   ...(process.env.ADMIN_URL ? process.env.ADMIN_URL.split(',').map(u => u.trim()) : []),
 ];
@@ -30,10 +32,12 @@ const allowedOrigins = [
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/+$/, '');
     if (
-      allowedOrigins.includes(origin) ||
-      origin.startsWith('http://localhost:') ||
-      origin.startsWith('http://127.0.0.1:')
+      allowedOrigins.some(o => o.replace(/\/+$/, '') === cleanOrigin) ||
+      cleanOrigin.startsWith('http://localhost:') ||
+      cleanOrigin.startsWith('http://127.0.0.1:') ||
+      cleanOrigin.endsWith('.vercel.app')
     ) {
       return callback(null, true);
     }
