@@ -313,32 +313,6 @@
       "state": "Tamil Nadu",
       "addresses": [],
       "createdAt": "2026-10-28T10:43:22.905Z"
-    },
-    {
-      "id": "6ae4679896ff94d0b169548d",
-      "name": "test",
-      "email": "sss@gmail.com",
-      "password": "$2b$10$RJsBoSfvIToGhUUZUXDOS.5U7aII5qepghu/opDp93Zp.5RgOLdWW",
-      "phone": "8940473703",
-      "isPhoneVerified": true,
-      "role": "customer",
-      "city": "Kumbakonam",
-      "state": "Tamil Nadu",
-      "addresses": [
-        {
-          "id": "addr_1793422784367_ayo8x",
-          "label": "Home",
-          "fullName": "Vijay",
-          "phone": "8940473703",
-          "street": "2/547",
-          "city": "Kumbakonam",
-          "district": "Kumbakonam",
-          "state": "Tamil Nadu",
-          "pincode": "612702",
-          "isDefault": true
-        }
-      ],
-      "createdAt": "2026-10-30T09:47:04.898Z"
     }
   ]
 }
