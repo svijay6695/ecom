@@ -19,6 +19,7 @@ import {
 import { useOrders, type Order } from '../../context/OrderContext';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { resolveProductImageUrl } from '../../services/backendApi';
 import './OrdersModal.css';
 
 const OrdersModal: React.FC = () => {
@@ -673,7 +674,7 @@ const OrdersModal: React.FC = () => {
                                                 <div className="item-thumb-wrapper">
                                                     {item.image ? (
                                                         <img
-                                                            src={item.image.startsWith('/uploads') ? `http://localhost:5001${item.image}` : item.image}
+                                                            src={resolveProductImageUrl(item.image)}
                                                             alt={item.title}
                                                             className="item-thumb"
                                                         />

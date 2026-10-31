@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ShoppingBag, Check, ChevronDown, AlertCircle } from 'lucide-react';
 import { useCart, type Product } from '../../context/CartContext';
+import { resolveProductImageUrl } from '../../services/backendApi';
 import './ProductCard.css';
 
 const DEFAULT_WEIGHT_OPTIONS = [
@@ -140,7 +141,7 @@ const ProductCard: React.FC<Product> = ({
                 <div className="bg-pattern"></div>
                 {image ? (
                     <img
-                        src={image.startsWith('/uploads') ? `http://localhost:5001${image}` : image}
+                        src={resolveProductImageUrl(image)}
                         alt={title}
                         className="product-image-real"
                     />

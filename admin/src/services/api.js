@@ -1,4 +1,20 @@
 const BASE_URL = (import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:5001/api').replace(/\/+$/, '');
+export const BACKEND_ROOT_URL = BASE_URL.replace(/\/api\/?$/, '');
+
+/**
+ * Resolves product image URLs dynamically across local dev & production deployments.
+ * Replaces localhost:5001 with production backend origin when running live.
+ */
+export const resolveProductImageUrl = (image) => {
+  if (!image) return '';
+  if (image.includes('localhost:5001')) {
+    return image.replace(/https?:\/\/localhost:5001/, BACKEND_ROOT_URL);
+  }
+  if (image.startsWith('/uploads')) {
+    return `${BACKEND_ROOT_URL}${image}`;
+  }
+  return image;
+};
 
 // Helper for authorized fetch
 const request = async (endpoint, options = {}) => {

@@ -1,6 +1,25 @@
 import store from '../services/store.js';
 import { upload } from '../middleware/uploadMiddleware.js';
 
+const getBaseUrl = (req) => {
+  const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+  const host = req.get('host') || 'localhost:5001';
+  return `${proto}://${host}`;
+};
+
+const sanitizeProductImage = (product, baseUrl) => {
+  if (!product) return product;
+  const p = product.toObject ? product.toObject() : { ...product };
+  if (p.image) {
+    if (p.image.includes('localhost:5001')) {
+      p.image = p.image.replace(/https?:\/\/localhost:5001/, baseUrl);
+    } else if (p.image.startsWith('/uploads')) {
+      p.image = `${baseUrl}${p.image}`;
+    }
+  }
+  return p;
+};
+
 export const getProducts = async (req, res) => {
   try {
     const { category, search, sort } = req.query;
@@ -26,10 +45,13 @@ export const getProducts = async (req, res) => {
       else if (sort === 'name-asc') products.sort((a, b) => a.title.localeCompare(b.title));
     }
 
+    const baseUrl = getBaseUrl(req);
+    const sanitizedProducts = products.map(p => sanitizeProductImage(p, baseUrl));
+
     res.json({
       success: true,
-      count: products.length,
-      data: products
+      count: sanitizedProducts.length,
+      data: sanitizedProducts
     });
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -43,7 +65,8 @@ export const getProductById = async (req, res) => {
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
-    res.json({ success: true, data: product });
+    const baseUrl = getBaseUrl(req);
+    res.json({ success: true, data: sanitizeProductImage(product, baseUrl) });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error retrieving product' });
   }
@@ -199,9 +222,8 @@ export const uploadProductImage = (req, res) => {
       });
     }
 
-    const host = req.get('host') || 'localhost:5001';
-    const protocol = req.protocol || 'http';
-    const imageUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+    const baseUrl = getBaseUrl(req);
+    const imageUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
     return res.json({
       success: true,

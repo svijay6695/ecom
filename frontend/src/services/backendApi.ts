@@ -16,6 +16,22 @@ const getApiBaseUrl = () => {
 };
 
 const API_BASE_URL = getApiBaseUrl();
+export const BACKEND_ROOT_URL = API_BASE_URL.replace(/\/api\/?$/, '');
+
+/**
+ * Resolves product image URLs dynamically across local dev & production deployments.
+ * Fixes CORS/loopback restrictions when localhost:5001 is stored in DB on production.
+ */
+export const resolveProductImageUrl = (image?: string): string => {
+  if (!image) return '';
+  if (image.includes('localhost:5001')) {
+    return image.replace(/https?:\/\/localhost:5001/, BACKEND_ROOT_URL);
+  }
+  if (image.startsWith('/uploads')) {
+    return `${BACKEND_ROOT_URL}${image}`;
+  }
+  return image;
+};
 
 /**
  * Fetch live products catalogue with updated prices, weights, and stock from MongoDB

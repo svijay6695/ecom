@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Search, X, SlidersHorizontal, PackageOpen } from 'lucide-react';
 import ProductCard from './ProductCard';
-import { getProductsApi } from '../../services/backendApi';
+import { getProductsApi, resolveProductImageUrl } from '../../services/backendApi';
 import './ProductList.css';
 
 import almondImg from '../../assets/1.jpg';
@@ -188,11 +188,11 @@ const ProductList: React.FC = () => {
                 const numId = Number(p.numericId || p.id || 1);
                 let resolvedImage = almondImg;
                 if (p.image && (p.image.startsWith('http') || p.image.startsWith('/uploads') || p.image.startsWith('data:'))) {
-                    resolvedImage = p.image.startsWith('/uploads') ? `http://localhost:5001${p.image}` : p.image;
+                    resolvedImage = resolveProductImageUrl(p.image);
                 } else if (LOCAL_IMAGES[numId]) {
                     resolvedImage = LOCAL_IMAGES[numId];
                 } else if (p.image) {
-                    resolvedImage = p.image;
+                    resolvedImage = resolveProductImageUrl(p.image);
                 }
 
                 return {

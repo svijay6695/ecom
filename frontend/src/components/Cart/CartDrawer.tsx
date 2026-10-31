@@ -27,7 +27,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useOrders } from '../../context/OrderContext';
 import type { Address } from '../../context/AuthTypes';
 import { loadRazorpayScript, type RazorpayOptions, type RazorpayPaymentSuccess } from '../../services/razorpay';
-import { createRazorpayOrderApi, verifyRazorpayPaymentApi } from '../../services/backendApi';
+import { createRazorpayOrderApi, verifyRazorpayPaymentApi, resolveProductImageUrl } from '../../services/backendApi';
 import './CartDrawer.css';
 
 type DrawerStep = 'cart' | 'checkout' | 'success';
@@ -956,7 +956,7 @@ const CartDrawer: React.FC = () => {
                                         <div className="cart-item-image-wrapper">
                                             {item.image ? (
                                                 <img
-                                                    src={item.image.startsWith('/uploads') ? `http://localhost:5001${item.image}` : item.image}
+                                                    src={resolveProductImageUrl(item.image)}
                                                     alt={item.title}
                                                     className="cart-item-img"
                                                 />

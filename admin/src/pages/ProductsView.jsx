@@ -18,7 +18,7 @@ import {
   Upload,
   Loader2
 } from 'lucide-react';
-import api from '../services/api';
+import api, { resolveProductImageUrl } from '../services/api';
 import './ProductsView.css';
 
 const PRESET_IMAGES = [
@@ -472,7 +472,7 @@ const ProductsView = () => {
                           <div className="product-thumb-box">
                             {p.image ? (
                               <img
-                                src={p.image.startsWith('/uploads') ? `http://localhost:5001${p.image}` : p.image}
+                                src={resolveProductImageUrl(p.image)}
                                 alt={p.title}
                                 className="product-thumb-img"
                                 onError={(e) => {
@@ -860,7 +860,7 @@ const ProductsView = () => {
                   <div className="uploaded-image-card">
                     <div className="uploaded-img-preview">
                       <img
-                        src={formData.image.startsWith('/uploads') ? `http://localhost:5001${formData.image}` : formData.image}
+                        src={resolveProductImageUrl(formData.image)}
                         alt="Product Preview"
                         onError={(e) => { e.currentTarget.style.display = 'none'; }}
                       />
