@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server/src/index.js",
+    "postinstall": "npm install --prefix server",
     "dev": "npm run dev --prefix frontend",
     "admin": "npm run dev --prefix admin",
     "server": "npm run dev --prefix server",
