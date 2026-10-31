@@ -4,6 +4,9 @@
  */
 
 const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_BACKEND_API_URL) {
+    return import.meta.env.VITE_BACKEND_API_URL.replace(/\/+$/, '');
+  }
   if (typeof window !== 'undefined' && window.location) {
     const protocol = window.location.protocol || 'http:';
     const hostname = window.location.hostname || 'localhost';
