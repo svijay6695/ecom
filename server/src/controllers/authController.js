@@ -23,17 +23,20 @@ export const register = async (req, res) => {
 
     const cleanEmail = email.toLowerCase().trim();
     const phoneDigits = (phone || '').replace(/\D/g, '').slice(-10);
+    console.log(`\n🔍 [REGISTER ATTEMPT] Email: "${cleanEmail}", Phone: "${phoneDigits}"`);
     if (!phoneDigits || phoneDigits.length !== 10) {
       return res.status(400).json({ success: false, message: 'Phone Number must be exactly 10 digits.' });
     }
 
     const existingUser = await store.findUserByEmail(cleanEmail);
     if (existingUser) {
+      console.log(`⚠️ [REGISTER BLOCKED] Email "${cleanEmail}" exists:`, existingUser);
       return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
     }
 
     const existingPhoneUser = await store.findUserByPhone(phoneDigits);
     if (existingPhoneUser) {
+      console.log(`⚠️ [REGISTER BLOCKED] Phone "${phoneDigits}" exists:`, existingPhoneUser);
       return res.status(409).json({
         success: false,
         message: 'This phone number is already registered. Please sign in instead.'

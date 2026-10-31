@@ -315,28 +315,16 @@
       "createdAt": "2026-10-28T10:43:22.905Z"
     },
     {
-      "id": "6ae43e3d03a42018ec27b0cc",
+      "id": "6ae4679896ff94d0b169548d",
       "name": "test",
-      "email": "test@gmail.com",
-      "password": "$2b$10$izYPcFF41dxFxASlUgEVTO2tN1xEuPQy9lo6BkY.F8NiXOyxdLFt2",
-      "phone": "9600686102",
-      "isPhoneVerified": false,
-      "role": "customer",
-      "city": "Kumbakonam",
-      "state": "Tamil Nadu",
-      "createdAt": "2026-10-30T06:50:37.406Z"
-    },
-    {
-      "id": "6ae43ed903a42018ec27b11f",
-      "name": "fsdf",
-      "email": "test111@gmail.com",
-      "password": "$2b$10$5E1ct6su1gGlJrmI17UVweNSMAGSGWMl7FhW0K/Y13vXoHbogvOfS",
+      "email": "sss@gmail.com",
+      "password": "$2b$10$RJsBoSfvIToGhUUZUXDOS.5U7aII5qepghu/opDp93Zp.5RgOLdWW",
       "phone": "8940473703",
       "isPhoneVerified": false,
       "role": "customer",
       "city": "Kumbakonam",
       "state": "Tamil Nadu",
-      "createdAt": "2026-10-30T06:53:13.103Z"
+      "createdAt": "2026-10-30T09:47:04.898Z"
     }
   ]
 }

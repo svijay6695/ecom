@@ -142,6 +142,7 @@ const AuthModal: React.FC = () => {
             setOtpCode('');
             setResendCountdown(30);
             setErrorMessage('');
+            setSuccessMessage('');
         }
     }, [authMode]);
 
@@ -651,22 +652,6 @@ const AuthModal: React.FC = () => {
                 {/* 3. Phone OTP Verification Form */}
                 {authMode === 'otp' && (
                     <form className="auth-form otp-form" onSubmit={handleVerifyOtpSubmit}>
-                        <div style={{
-                            background: '#f0fdf4',
-                            border: '1px solid #bbf7d0',
-                            borderRadius: '8px',
-                            padding: '10px 14px',
-                            marginBottom: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '13px',
-                            color: '#15803d'
-                        }}>
-                            <ShieldCheck size={16} />
-                            <span>Firebase SMS verification code sent to <strong>+91 {activePhoneDisplay}</strong></span>
-                        </div>
-
                         <div className="form-group otp-group">
                             <label htmlFor="otp-input" className="otp-input-label">
                                 <Smartphone size={16} /> Enter 6-Digit OTP Received via SMS
@@ -782,22 +767,6 @@ const AuthModal: React.FC = () => {
                 {/* 5. Reset Password Form (OTP + New Password) */}
                 {authMode === 'reset' && (
                     <form className="auth-form otp-form" onSubmit={handleResetPasswordSubmit} autoComplete="off">
-                        <div style={{
-                            background: '#f0fdf4',
-                            border: '1px solid #bbf7d0',
-                            borderRadius: '8px',
-                            padding: '10px 14px',
-                            marginBottom: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '13px',
-                            color: '#15803d'
-                        }}>
-                            <ShieldCheck size={16} />
-                            <span>Firebase SMS reset code sent to <strong>+91 {activePhoneDisplay}</strong></span>
-                        </div>
-
                         <div className="form-group otp-group">
                             <label htmlFor="reset-otp-input" className="otp-input-label">
                                 <Smartphone size={16} /> Enter 6-Digit OTP Received via SMS
