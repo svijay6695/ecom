@@ -1,0 +1,59 @@
+name: CI / Test & Build Suite
+
+on:
+  push:
+    branches:
+      - main
+      - deployment
+      - testing
+  pull_request:
+    branches:
+      - main
+      - deployment
+
+jobs:
+  verify:
+    name: Build, Unit & E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install All Dependencies
+        run: |
+          npm install
+          npm install --prefix frontend
+          npm install --prefix admin
+          npm install --prefix server
+
+      - name: Run Vitest Unit Tests
+        run: npm run test:unit
+
+      - name: Verify Frontend & Admin Production Builds
+        run: npm run build
+
+      - name: Install Playwright Chromium with OS Dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright End-to-End Tests
+        env:
+          CI: true
+        run: npm run test:e2e
+
+      - name: Upload Test Results / Report on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
