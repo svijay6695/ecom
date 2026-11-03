@@ -11,7 +11,8 @@
     "server": "npm run dev --prefix server",
     "dev:all": "node scripts/startAll.js",
     "build": "npm run build --prefix frontend && npm run build --prefix admin",
-    "db:migrate": "npm run db:migrate --prefix server"
+    "db:migrate": "npm run db:migrate --prefix server",
+    "clean:users": "npm run clean:users --prefix server"
   }
 }
 
