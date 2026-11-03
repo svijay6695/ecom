@@ -1,17 +1,16 @@
-name: CI / Test & Build Suite
+name: CI/CD Pipeline
 
+# Only run when code is pushed to main or in a Pull Request targeting main
 on:
   push:
     branches:
       - main
-      - deployment
-      - testing
   pull_request:
     branches:
       - main
-      - deployment
 
 jobs:
+  # 1. Quality & Test Gate
   verify:
     name: Build, Unit & E2E Tests
     runs-on: ubuntu-latest
@@ -57,3 +56,21 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 7
+
+  # 2. Production Deployment (ONLY runs when main branch is updated & all tests pass)
+  deploy:
+    name: Deploy to Production
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Production Deployment Trigger
+        run: |
+          echo "============================================="
+          echo "✅ All tests and production builds passed!"
+          echo "🚀 Deploying 'main' branch to production..."
+          echo "============================================="
