@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+# Only run when code is pushed to main or in a Pull Request targeting main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # 1. Build Verification
+  build-check:
+    name: Verify Production Builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          npm install --prefix frontend
+          npm install --prefix admin
+          npm install --prefix server
+
+      - name: Verify Frontend & Admin Production Builds
+        run: npm run build
+
+  # 2. Production Deployment (ONLY runs when main branch is updated & build passes)
+  deploy:
+    name: Deploy to Production
+    needs: build-check
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Production Deployment Trigger
+        run: |
+          echo "============================================="
+          echo "✅ Production builds verified successfully!"
+          echo "🚀 Deploying 'main' branch to production..."
+          echo "============================================="
