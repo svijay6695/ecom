@@ -539,7 +539,7 @@ class DataStore {
             { phone: { $regex: `${cleanDigits}$` } }
           ]
         });
-        if (found) return found;
+        return found || null;
       } catch (e) {
         console.warn('Mongo findUserByPhone error:', e);
       }
