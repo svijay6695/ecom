@@ -11,7 +11,12 @@
     "server": "npm run dev --prefix server",
     "dev:all": "node scripts/startAll.js",
     "build": "npm run build --prefix frontend && npm run build --prefix admin",
-    "db:migrate": "npm run db:migrate --prefix server"
+    "db:migrate": "npm run db:migrate --prefix server",
+    "test:unit": "npm run test --prefix frontend",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1"
   }
 }
-
