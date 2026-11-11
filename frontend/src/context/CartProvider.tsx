@@ -1,9 +1,12 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { CartContext } from './CartContext';
 import type { Product, CartItem } from './CartTypes';
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+        if (typeof window === 'undefined') return [];
         try {
             const saved = localStorage.getItem('vr_nuts_cart');
             if (!saved) return [];
@@ -20,6 +23,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [promoCode, setPromoCode] = useState<string | null>(() => {
+        if (typeof window === 'undefined') return null;
         try {
             return localStorage.getItem('vr_nuts_promo') || null;
         } catch {

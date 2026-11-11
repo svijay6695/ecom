@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { AuthContext } from './AuthContext';
 import type { User, AuthMode, Address, PendingOtpData } from './AuthTypes';
@@ -21,6 +23,7 @@ import {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(() => {
+        if (typeof window === 'undefined') return null;
         try {
             const saved = localStorage.getItem('vr_nuts_user');
             return saved ? JSON.parse(saved) : null;

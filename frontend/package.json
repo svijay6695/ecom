@@ -4,22 +4,22 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "next dev -p 5173",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "dev:all": "node scripts/startAll.js",
     "server": "node --watch server/src/index.js",
     "admin": "npm run dev --prefix admin",
-    "build": "tsc -b && vite build",
-    "build:admin": "npm run build --prefix admin",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "vite:dev": "vite",
+    "vite:build": "tsc -b && vite build"
   },
   "dependencies": {
-    "22": "^0.0.0",
     "firebase": "^13.1.0",
     "lucide-react": "^0.563.0",
+    "next": "^16.4.6",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "start": "^5.1.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Search, X, SlidersHorizontal, PackageOpen } from 'lucide-react';
 import ProductCard from './ProductCard';
@@ -18,16 +20,18 @@ import type { Product } from '../../context/CartContext';
 type CategoryFilter = 'all' | 'nuts' | 'seeds';
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'name-asc';
 
+const getImgSrc = (img: any): string => (typeof img === 'string' ? img : img?.src || '');
+
 // Asset map linking numericIds to bundled high-res images
 const LOCAL_IMAGES: Record<number, string> = {
-    1: almondImg,
-    2: cashewImg,
-    3: walnutImg,
-    4: pistachioImg,
-    5: datesImg,
-    6: sunflowerSeedsImg,
-    7: pumpkinSeedsImg,
-    8: watermelonSeedsImg,
+    1: getImgSrc(almondImg),
+    2: getImgSrc(cashewImg),
+    3: getImgSrc(walnutImg),
+    4: getImgSrc(pistachioImg),
+    5: getImgSrc(datesImg),
+    6: getImgSrc(sunflowerSeedsImg),
+    7: getImgSrc(pumpkinSeedsImg),
+    8: getImgSrc(watermelonSeedsImg),
 };
 
 // Initial local fallback products
@@ -37,7 +41,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 1,
         title: "Almond",
         description: "Premium California almonds handpicked for crunch and nutrition",
-        image: almondImg,
+        image: getImgSrc(almondImg),
         price: 1000,
         weights: "1 kg",
         category: "nuts",
@@ -52,7 +56,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 2,
         title: "Cashew",
         description: "Grade-A whole white cashews rich in natural buttery flavor",
-        image: cashewImg,
+        image: getImgSrc(cashewImg),
         price: 1000,
         weights: "1 kg",
         category: "nuts",
@@ -67,7 +71,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 3,
         title: "Walnuts",
         description: "Premium omega-3 rich walnut kernels with natural crunch",
-        image: walnutImg,
+        image: getImgSrc(walnutImg),
         price: 1500,
         weights: "1 kg",
         category: "nuts",
@@ -82,7 +86,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 4,
         title: "Pistachios",
         description: "Lightly salted roasted pistachios with authentic nutty aroma",
-        image: pistachioImg,
+        image: getImgSrc(pistachioImg),
         price: 1500,
         weights: "1 kg",
         category: "nuts",
@@ -97,7 +101,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 5,
         title: "Dates",
         description: "Soft and luscious premium dark dates packed with fiber",
-        image: datesImg,
+        image: getImgSrc(datesImg),
         price: 800,
         weights: "1 kg",
         category: "nuts",
@@ -112,7 +116,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 6,
         title: "Sunflower Seeds",
         description: "Peeled raw sunflower seeds loaded with vitamin E and minerals",
-        image: sunflowerSeedsImg,
+        image: getImgSrc(sunflowerSeedsImg),
         price: 500,
         weights: "1 kg",
         category: "seeds",
@@ -127,7 +131,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 7,
         title: "Pumpkin Seeds",
         description: "Raw green pepitas (pumpkin seeds) high in zinc and protein",
-        image: pumpkinSeedsImg,
+        image: getImgSrc(pumpkinSeedsImg),
         price: 800,
         weights: "1 kg",
         category: "seeds",
@@ -142,7 +146,7 @@ const INITIAL_PRODUCTS: Product[] = [
         numericId: 8,
         title: "Watermelon Seeds",
         description: "Shelled nutritious watermelon magaz seeds for wholesome snacking",
-        image: watermelonSeedsImg,
+        image: getImgSrc(watermelonSeedsImg),
         price: 700,
         weights: "1 kg",
         category: "seeds",
@@ -186,7 +190,7 @@ const ProductList: React.FC = () => {
         if (liveData && Array.isArray(liveData) && liveData.length > 0) {
             const mapped: Product[] = liveData.map((p) => {
                 const numId = Number(p.numericId || p.id || 1);
-                let resolvedImage = almondImg;
+                let resolvedImage: string = getImgSrc(almondImg);
                 if (p.image && (p.image.startsWith('http') || p.image.startsWith('/uploads') || p.image.startsWith('data:'))) {
                     resolvedImage = resolveProductImageUrl(p.image);
                 } else if (LOCAL_IMAGES[numId]) {

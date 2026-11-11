@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useMemo } from 'react';
 import { ShoppingBag, Check, ChevronDown, AlertCircle } from 'lucide-react';
 import { useCart, type Product } from '../../context/CartContext';

@@ -7,13 +7,25 @@ import {
     type UserCredential
 } from 'firebase/auth';
 
+const getEnvVal = (nextKey: string, viteKey: string, fallback: string): string => {
+    if (typeof process !== 'undefined' && process.env && process.env[nextKey]) {
+        return process.env[nextKey] as string;
+    }
+    try {
+        if (typeof import.meta !== 'undefined' && (import.meta as any).env?.[viteKey]) {
+            return (import.meta as any).env[viteKey];
+        }
+    } catch {}
+    return fallback;
+};
+
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyD7AGMS3uFLDFNgOmT95hcmCdOQVlxpWIc',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'vpnutsapp.firebaseapp.com',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'vpnutsapp',
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'vpnutsapp.firebasestorage.app',
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '175070274436',
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:175070274436:web:4440d9e75004dac608f3d1'
+    apiKey: getEnvVal('NEXT_PUBLIC_FIREBASE_API_KEY', 'VITE_FIREBASE_API_KEY', 'AIzaSyD7AGMS3uFLDFNgOmT95hcmCdOQVlxpWIc'),
+    authDomain: getEnvVal('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN', 'VITE_FIREBASE_AUTH_DOMAIN', 'vpnutsapp.firebaseapp.com'),
+    projectId: getEnvVal('NEXT_PUBLIC_FIREBASE_PROJECT_ID', 'VITE_FIREBASE_PROJECT_ID', 'vpnutsapp'),
+    storageBucket: getEnvVal('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET', 'VITE_FIREBASE_STORAGE_BUCKET', 'vpnutsapp.firebasestorage.app'),
+    messagingSenderId: getEnvVal('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID', 'VITE_FIREBASE_MESSAGING_SENDER_ID', '175070274436'),
+    appId: getEnvVal('NEXT_PUBLIC_FIREBASE_APP_ID', 'VITE_FIREBASE_APP_ID', '1:175070274436:web:4440d9e75004dac608f3d1')
 };
 
 // Initialize Firebase App singleton

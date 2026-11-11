@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Award, Leaf, HeartHandshake, Sparkles } from 'lucide-react';
 import './About.css';

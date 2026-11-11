@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { OrderContext } from './OrderContext';
 import type { Order, CreateOrderInput, OrderStatus } from './OrderTypes';
@@ -72,6 +74,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Persistent storage of all local orders
     const [allOrders, setAllOrders] = useState<Order[]>(() => {
+        if (typeof window === 'undefined') return [];
         try {
             const saved = localStorage.getItem('vr_nuts_orders');
             if (saved) return JSON.parse(saved);
