@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: vijay6695/vpnuts-backend:latest
+    container_name: vpnuts-backend
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./server/.env
+    environment:
+      - PORT=5001
+      - NODE_ENV=production
+    volumes:
+      - ./server/uploads:/app/uploads
+      - ./server/data:/app/data
+
