@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VP Nuts</string>
+    <string name="title_activity_main">VP Nuts</string>
+    <string name="package_name">com.vpnuts.app</string>
+    <string name="custom_url_scheme">com.vpnuts.app</string>
+</resources>
