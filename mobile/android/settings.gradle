@@ -1,0 +1,105 @@
+pluginManagement {
+  // Fix AGP AndroidLocationsException when both ANDROID_PREFS_ROOT and ANDROID_USER_HOME are set in environment
+  try {
+    if (System.getenv("ANDROID_PREFS_ROOT") != null && System.getenv("ANDROID_USER_HOME") != null) {
+      def peClass = Class.forName("java.lang.ProcessEnvironment")
+      def varClass = Class.forName("java.lang.ProcessEnvironment\$Variable")
+      def valueOfMethod = varClass.getDeclaredMethod("valueOf", String.class)
+      valueOfMethod.setAccessible(true)
+      def varKey = valueOfMethod.invoke(null, "ANDROID_PREFS_ROOT")
+
+      ["theEnvironment", "theCaseInsensitiveEnvironment"].each { fieldName ->
+        try {
+          def f = peClass.getDeclaredField(fieldName)
+          f.setAccessible(true)
+          def map = f.get(null)
+          if (map != null) {
+            map.remove(varKey)
+            map.remove("ANDROID_PREFS_ROOT")
+          }
+        } catch (Throwable ignored) {}
+      }
+    }
+  } catch (Throwable ignored) {}
+  def findNodeExecutable = {
+    if (System.getenv("NODE_BINARY") != null) {
+      return System.getenv("NODE_BINARY")
+    }
+    if (System.getProperty("NODE_BINARY") != null) {
+      return System.getProperty("NODE_BINARY")
+    }
+    if (providers.gradleProperty("NODE_BINARY").isPresent()) {
+      return providers.gradleProperty("NODE_BINARY").get()
+    }
+
+    def userHome = System.getProperty("user.home")
+
+    def candidates = [
+      "/opt/homebrew/bin/node",
+      "/usr/local/bin/node",
+      userHome + "/.volta/bin/node",
+      userHome + "/.asdf/shims/node",
+      userHome + "/.fnm/current/bin/node",
+    ]
+
+    def nvmDir = new File(userHome, ".nvm/versions/node")
+    if (nvmDir.exists() && nvmDir.isDirectory()) {
+      def versions = nvmDir.listFiles()?.findAll { it.isDirectory() }?.sort { it.name }
+      if (versions) {
+        def latestNode = new File(versions.last(), "bin/node")
+        if (latestNode.canExecute()) {
+          candidates.add(0, latestNode.absolutePath)
+        }
+      }
+    }
+
+    for (candidate in candidates) {
+      if (new File(candidate).canExecute()) {
+        return candidate
+      }
+    }
+
+    return "node"
+  }
+
+  def nodeCmd = findNodeExecutable()
+  System.setProperty("NODE_BINARY", nodeCmd)
+
+  def reactNativeGradlePlugin = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine(nodeCmd, "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })")
+    }.standardOutput.asText.get().trim()
+  ).getParentFile().absolutePath
+  includeBuild(reactNativeGradlePlugin)
+  
+  def expoPluginsPath = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine(nodeCmd, "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
+    }.standardOutput.asText.get().trim(),
+    "../android/expo-gradle-plugin"
+  ).absolutePath
+  includeBuild(expoPluginsPath)
+}
+
+plugins {
+  id("com.facebook.react.settings")
+  id("expo-autolinking-settings")
+}
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+  if (System.getenv('EXPO_USE_COMMUNITY_AUTOLINKING') == '1') {
+    ex.autolinkLibrariesFromCommand()
+  } else {
+    ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
+  }
+}
+expoAutolinking.useExpoModules()
+
+rootProject.name = 'VP Nuts'
+
+expoAutolinking.useExpoVersionCatalog()
+
+include ':app'
+includeBuild(expoAutolinking.reactNativeGradlePlugin)

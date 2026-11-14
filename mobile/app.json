@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "VP Nuts",
+    "slug": "vpnuts-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/1.jpg",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#8B4513"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vpnuts.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#8B4513"
+      },
+      "package": "com.vpnuts.app"
+    }
+  }
+}
+
