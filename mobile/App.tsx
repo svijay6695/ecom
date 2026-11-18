@@ -7,6 +7,7 @@ import { OrderProvider } from './src/context/OrderContext';
 import { CartProvider } from './src/context/CartContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { SplashScreen } from './src/components/SplashScreen';
+import { AuthModal } from './src/components/AuthModal';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -16,10 +17,11 @@ export default function App() {
       <AuthProvider>
         <OrderProvider>
           <CartProvider>
+            <StatusBar style="dark" />
             <NavigationContainer>
-              <StatusBar style="dark" />
               <AppNavigator />
             </NavigationContainer>
+            <AuthModal />
             {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
           </CartProvider>
         </OrderProvider>

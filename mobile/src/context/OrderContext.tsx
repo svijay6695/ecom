@@ -37,50 +37,75 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     AsyncStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders)).catch(() => {});
   }, [orders]);
 
+  useEffect(() => {
+    if (user?.email) {
+      refreshOrders();
+    }
+  }, [user?.email]);
+
   const refreshOrders = async () => {
-    if (!user?.email) return;
-    const remote = await getUserOrdersApi(user.email);
+    const query = user?.email || user?.phone;
+    if (!query) return;
+    const remote = await getUserOrdersApi(query);
     if (Array.isArray(remote) && remote.length > 0) {
       // Map remote MongoDB orders
-      const mapped: Order[] = remote.map((b: any) => ({
-        id: b.orderId,
-        date: new Date(b.createdAt || Date.now()).toLocaleDateString('en-IN', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric'
-        }),
-        userId: b.customer?.id,
-        userEmail: b.customer?.email,
-        items: (b.items || []).map((it: any) => ({
-          id: it.productId,
-          title: it.title,
-          price: it.unitPrice,
-          weights: it.weight || '1 kg',
-          selectedWeight: it.weight || '1 kg',
-          unitPrice: it.unitPrice,
-          quantity: it.quantity,
-          cartItemId: `${it.productId}-${it.weight}`
-        })),
-        subtotal: b.subtotal || 0,
-        discount: b.discount || 0,
-        total: b.totalAmount || 0,
-        recipientName: b.customer?.name || 'Customer',
-        recipientPhone: b.customer?.phone || '',
-        deliveryAddress: b.shippingAddress?.street || '',
-        deliveryCity: b.shippingAddress?.city || 'Kumbakonam',
-        deliveryPincode: b.shippingAddress?.pincode || '',
-        paymentMethod: b.paymentMethod || 'cod',
-        status: b.currentStatus === 'cancelled' ? 'Cancelled' : 'Confirmed',
-        cancelReason: b.cancelReason,
-        estimatedDelivery: b.currentStatus === 'cancelled' ? 'Order Cancelled' : '1 - 2 Business Days',
-        trackingSteps: (b.trackingSteps || []).map((s: any) => ({
-          title: s.title,
-          description: s.description,
-          time: s.timestamp ? new Date(s.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : 'Pending',
-          completed: !!s.completed,
-          current: s.status === b.currentStatus
-        }))
-      }));
+      const mapped: Order[] = remote.map((b: any) => {
+        const isCancelled = b.currentStatus === 'cancelled';
+        const displayStatus = isCancelled
+          ? 'Cancelled'
+          : b.currentStatus === 'delivered'
+          ? 'Delivered'
+          : b.currentStatus === 'in-transit' || b.currentStatus === 'out-for-delivery'
+          ? 'In Transit'
+          : b.currentStatus === 'packed'
+          ? 'Packed'
+          : 'Confirmed';
+
+        return {
+          id: b.orderId,
+          date: new Date(b.createdAt || Date.now()).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+          }),
+          userId: b.customer?.id,
+          userEmail: b.customer?.email,
+          items: (b.items || []).map((it: any) => ({
+            id: it.productId,
+            title: it.title,
+            price: it.unitPrice,
+            weights: it.weight || '1 kg',
+            selectedWeight: it.weight || '1 kg',
+            unitPrice: it.unitPrice,
+            quantity: it.quantity,
+            image: it.image || '',
+            cartItemId: `${it.productId}-${it.weight}`
+          })),
+          subtotal: b.subtotal || 0,
+          discount: b.discount || 0,
+          total: b.totalAmount || 0,
+          recipientName: b.customer?.name || 'Customer',
+          recipientPhone: b.customer?.phone || '',
+          deliveryAddress: b.shippingAddress?.street || '',
+          deliveryCity: b.shippingAddress?.city || 'Kumbakonam',
+          deliveryPincode: b.shippingAddress?.pincode || '',
+          paymentMethod: b.paymentMethod || 'cod',
+          status: displayStatus as any,
+          cancelReason: b.cancelReason,
+          estimatedDelivery: isCancelled
+            ? 'Order Cancelled'
+            : b.currentStatus === 'delivered'
+            ? 'Delivered'
+            : '1 - 2 Business Days',
+          trackingSteps: (b.trackingSteps || []).map((s: any) => ({
+            title: s.title,
+            description: s.description,
+            time: s.timestamp ? new Date(s.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : 'Pending',
+            completed: !!s.completed,
+            current: s.status === b.currentStatus
+          }))
+        };
+      });
       setOrders(mapped);
     }
   };
@@ -147,25 +172,55 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setOrders(prev => [newOrder, ...prev]);
     setSelectedOrder(newOrder);
 
-    // Sync to backend asynchronously
-    syncOrderToBackend({
-      id: newOrder.id,
-      recipientName: newOrder.recipientName,
-      recipientPhone: newOrder.recipientPhone,
-      recipientEmail: newOrder.userEmail,
-      deliveryAddress: newOrder.deliveryAddress,
-      deliveryCity: newOrder.deliveryCity,
-      deliveryPincode: newOrder.deliveryPincode,
-      items: newOrder.items,
-      subtotal: newOrder.subtotal,
-      discount: newOrder.discount,
-      total: newOrder.total,
-      paymentMethod: newOrder.paymentMethod,
-      paymentStatus: newOrder.paymentStatus,
-      razorpayOrderId: newOrder.razorpayOrderId,
-      razorpayPaymentId: newOrder.razorpayPaymentId,
-      razorpaySignature: newOrder.razorpaySignature
-    });
+    // Sync to backend with full MongoDB schema
+    try {
+      const syncRes = await syncOrderToBackend({
+        orderId: newOrder.id,
+        customer: {
+          name: newOrder.recipientName,
+          phone: newOrder.recipientPhone.replace(/\D/g, '').slice(-10) || newOrder.recipientPhone,
+          email: newOrder.userEmail || ''
+        },
+        shippingAddress: {
+          street: newOrder.deliveryAddress,
+          city: newOrder.deliveryCity,
+          district: newOrder.deliveryCity,
+          state: 'Tamil Nadu',
+          pincode: newOrder.deliveryPincode
+        },
+        items: newOrder.items.map((it, idx) => {
+          const numId = Number(it.numericId || (typeof it.id === 'number' ? it.id : parseInt(String(it.id), 10))) || (idx + 1);
+          const price = Number(it.unitPrice || it.price) || 0;
+          const qty = Number(it.quantity) || 1;
+          return {
+            productId: numId,
+            title: it.title,
+            weight: it.selectedWeight || it.weights || '1 kg',
+            unitPrice: price,
+            quantity: qty,
+            totalPrice: price * qty,
+            image: typeof it.image === 'string' ? it.image : ''
+          };
+        }),
+        subtotal: newOrder.subtotal,
+        discount: newOrder.discount,
+        deliveryFee: 0,
+        totalAmount: newOrder.total,
+        paymentMethod: newOrder.paymentMethod,
+        paymentStatus: newOrder.paymentStatus || (newOrder.paymentMethod === 'cod' ? 'pending' : 'paid'),
+        razorpayOrderId: newOrder.razorpayOrderId || '',
+        razorpayPaymentId: newOrder.razorpayPaymentId || '',
+        razorpaySignature: newOrder.razorpaySignature || ''
+      });
+
+      if (syncRes && syncRes.success) {
+        console.log('✅ Mobile order confirmed and saved to MongoDB:', syncRes.data?.orderId || newOrder.id);
+      } else {
+        console.warn('⚠️ Backend order sync response:', syncRes?.message || syncRes);
+      }
+    } catch (syncErr) {
+      console.warn('⚠️ Order sync to backend failed:', syncErr);
+    }
 
     return newOrder;
   };

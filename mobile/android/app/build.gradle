@@ -11,6 +11,8 @@ def nodeCmd = System.getenv("NODE_BINARY") ?: findProperty("NODE_BINARY") ?: Sys
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
+    // Setting debuggableVariants = [] ensures the JS bundle is embedded into Debug APKs for standalone mobile testing
+    debuggableVariants = (findProperty('react.debuggableVariants') != null) ? findProperty('react.debuggableVariants').split(',') : []
     entryFile = file([nodeCmd, "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
     reactNativeDir = new File([nodeCmd, "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
     hermesCommand = new File([nodeCmd, "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/hermesc/%OS-BIN%/hermesc"
@@ -181,4 +183,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+}
+
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
 }

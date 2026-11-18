@@ -8,9 +8,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
-  SafeAreaView,
-  StatusBar
+  StatusBar,
+  Platform
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Search, X, ArrowRight, ShoppingBag, Sparkles, Truck, Tag } from 'lucide-react-native';
 import { Header } from '../components/Header';
 import { ProductCard } from '../components/ProductCard';
@@ -24,6 +25,8 @@ export const HomeScreen = ({ navigation }: any) => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('all');
   const [refreshing, setRefreshing] = useState(false);
   const { cartCount, cartTotal } = useCart();
+  const insets = useSafeAreaInsets();
+  const topInset = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 0);
 
   const fetchLiveProducts = async () => {
     const liveData = await getProductsApi();
@@ -70,7 +73,7 @@ export const HomeScreen = ({ navigation }: any) => {
   }, [products, selectedCategory, searchQuery]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: topInset }]}>
       <StatusBar barStyle="dark-content" />
       <Header onCartPress={() => navigation.navigate('Cart')} />
 
@@ -197,7 +200,7 @@ export const HomeScreen = ({ navigation }: any) => {
           </View>
         </TouchableOpacity>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

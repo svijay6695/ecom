@@ -6,18 +6,34 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Modal,
-  Alert
+  Alert,
+  Platform,
+  StatusBar,
+  RefreshControl
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Package, Truck, Calendar, MapPin, X, CheckCircle, Clock, Ban } from 'lucide-react-native';
 import { useOrders } from '../context/OrderContext';
 import { Order } from '../types/order';
 import { resolveProductImage } from '../types/product';
 
 export const OrdersScreen = () => {
-  const { orders, cancelOrder } = useOrders();
+  const { orders, cancelOrder, refreshOrders } = useOrders();
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const insets = useSafeAreaInsets();
+  const topInset = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 0);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refreshOrders();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -54,7 +70,8 @@ export const OrdersScreen = () => {
 
   if (orders.length === 0) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <View style={[styles.safeArea, { paddingTop: topInset }]}>
+        <StatusBar barStyle="dark-content" />
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconCircle}>
             <Package size={48} color="#8B4513" />
@@ -64,17 +81,29 @@ export const OrdersScreen = () => {
             When you place an order, live tracking of your Tamil Nadu dispatch journey will appear here.
           </Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: topInset }]}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Orders ({orders.length})</Text>
       </View>
 
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#8B4513']}
+            tintColor="#8B4513"
+          />
+        }
+      >
         {orders.map(order => {
           const statusColor = getStatusColor(order.status);
 
@@ -132,7 +161,7 @@ export const OrdersScreen = () => {
         presentationStyle="pageSheet"
         onRequestClose={() => setActiveOrder(null)}
       >
-        <SafeAreaView style={styles.modalSafeArea}>
+        <View style={[styles.modalSafeArea, { paddingTop: topInset }]}>
           <View style={styles.modalHeader}>
             <View>
               <Text style={styles.modalTitle}>Tracking #{activeOrder?.id}</Text>
@@ -215,6 +244,38 @@ export const OrdersScreen = () => {
               <Text style={styles.infoText}>{activeOrder?.deliveryAddress}, {activeOrder?.deliveryCity} - {activeOrder?.deliveryPincode}</Text>
             </View>
 
+            {/* Payment & Invoice Summary */}
+            <View style={styles.infoCard}>
+              <Text style={styles.infoTitle}>Payment Details</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                <Text style={styles.infoText}>Method:</Text>
+                <Text style={[styles.infoText, { fontWeight: '700', color: '#2C1810' }]}>
+                  {activeOrder?.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment (Razorpay)'}
+                </Text>
+              </View>
+              {activeOrder?.razorpayPaymentId ? (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <Text style={styles.infoText}>Razorpay Ref:</Text>
+                  <Text style={[styles.infoText, { fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace', color: '#166534', fontWeight: '700' }]}>
+                    {activeOrder.razorpayPaymentId}
+                  </Text>
+                </View>
+              ) : null}
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0E6D8' }}>
+                <Text style={[styles.infoText, { fontWeight: '700' }]}>Total Amount:</Text>
+                <Text style={[styles.infoText, { fontWeight: '800', color: '#8B4513', fontSize: 15 }]}>
+                  ₹{activeOrder?.total}
+                </Text>
+              </View>
+              {activeOrder?.cancelReason ? (
+                <View style={{ marginTop: 8, padding: 8, backgroundColor: '#FEE2E2', borderRadius: 6 }}>
+                  <Text style={{ fontSize: 11, color: '#991B1B' }}>
+                    <Text style={{ fontWeight: '700' }}>Reason for cancellation: </Text>{activeOrder.cancelReason}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+
             {/* Cancel Button if eligible */}
             {activeOrder && activeOrder.status !== 'Delivered' && activeOrder.status !== 'Cancelled' && (
               <TouchableOpacity
@@ -226,9 +287,9 @@ export const OrdersScreen = () => {
               </TouchableOpacity>
             )}
           </ScrollView>
-        </SafeAreaView>
+        </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 

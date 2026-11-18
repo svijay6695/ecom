@@ -52,9 +52,24 @@ export const createOrder = async (req, res) => {
     }
 
     const orderNum = Math.floor(100000 + Math.random() * 900000);
-    const orderId = `VPN-${orderNum}`;
+    const orderId = req.body.orderId || `VPN-${orderNum}`;
     const city = shippingAddress.city || 'Chennai';
     const district = shippingAddress.district || city;
+
+    const normalizedItems = (items || []).map((it, idx) => {
+      const unitPrice = Number(it.unitPrice || it.price) || 0;
+      const quantity = Math.max(1, Number(it.quantity) || 1);
+      const productId = it.productId || it.numericId || it.id || (idx + 1);
+      return {
+        productId,
+        title: it.title || 'Dry Fruits',
+        weight: it.weight || it.weights || it.selectedWeight || '1 kg',
+        unitPrice,
+        quantity,
+        totalPrice: Number(it.totalPrice) || (unitPrice * quantity),
+        image: typeof it.image === 'string' ? it.image : ''
+      };
+    });
 
     const trackingSteps = [
       {
@@ -95,13 +110,17 @@ export const createOrder = async (req, res) => {
 
     const newOrder = await store.createOrder({
       orderId,
-      customer,
+      customer: {
+        name: customer.name || 'Customer',
+        email: customer.email || '',
+        phone: (customer.phone || '').replace(/\D/g, '').slice(-10) || customer.phone
+      },
       shippingAddress: {
         ...shippingAddress,
         state: shippingAddress.state || 'Tamil Nadu',
         district
       },
-      items,
+      items: normalizedItems,
       trackingSteps,
       currentStatus: 'confirmed',
       subtotal: Number(subtotal) || 0,

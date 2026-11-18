@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "175070274436",
+    "project_id": "vpnutsapp",
+    "storage_bucket": "vpnutsapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175070274436:android:ad16268de4277f4908f3d1",
+        "android_client_info": {
+          "package_name": "com.vpnuts.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNno_N84objcRaWFv8VD5UnhZDRbPAFCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

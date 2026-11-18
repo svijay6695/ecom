@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const orderItemSchema = new mongoose.Schema({
-  productId: { type: Number, required: true },
+  productId: { type: mongoose.Schema.Types.Mixed, required: true },
   title: { type: String, required: true },
   weight: { type: String, required: true }, // '250g', '500g', '1kg'
   unitPrice: { type: Number, required: true },

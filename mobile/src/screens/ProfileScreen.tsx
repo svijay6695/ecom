@@ -6,25 +6,22 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
-  Modal
+  Modal,
+  Platform,
+  StatusBar,
+  KeyboardAvoidingView
 } from 'react-native';
-import { User, Phone, Mail, MapPin, LogOut, LogIn, Plus, Heart, Shield } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { User, Phone, Mail, MapPin, LogOut, LogIn, Plus, Heart, Shield, Lock, X } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import { Address } from '../types/auth';
 
 export const ProfileScreen = () => {
-  const { user, isAuthenticated, login, signup, logout, updateUserAddress, deleteUserAddress } = useAuth();
+  const { user, isAuthenticated, logout, updateUserAddress, deleteUserAddress, openAuthModal } = useAuth();
 
-  // Auth modal states
-  const [authModalVisible, setAuthModalVisible] = useState(false);
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const insets = useSafeAreaInsets();
+  const topInset = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 0);
 
   // Add Address Modal
   const [addressModalVisible, setAddressModalVisible] = useState(false);
@@ -33,48 +30,23 @@ export const ProfileScreen = () => {
   const [addrStreet, setAddrStreet] = useState('');
   const [addrCity, setAddrCity] = useState('Kumbakonam');
   const [addrPincode, setAddrPincode] = useState('612001');
-
-  const handleAuthSubmit = async () => {
-    setLoading(true);
-    if (authMode === 'signin') {
-      if (!email.trim() || !password.trim()) {
-        Alert.alert('Required', 'Please enter email and password.');
-        setLoading(false);
-        return;
-      }
-      const res = await login(email, password);
-      setLoading(false);
-      if (res.success) {
-        setAuthModalVisible(false);
-      } else {
-        Alert.alert('Sign In Failed', res.error || 'Invalid credentials');
-      }
-    } else {
-      if (!name.trim() || !email.trim() || !phone.trim() || !password.trim()) {
-        Alert.alert('Required', 'Please fill all fields.');
-        setLoading(false);
-        return;
-      }
-      const res = await signup(name, email, phone, password);
-      setLoading(false);
-      if (res.success) {
-        setAuthModalVisible(false);
-      } else {
-        Alert.alert('Sign Up Failed', res.error || 'Registration failed');
-      }
-    }
-  };
+  const [addrLabel, setAddrLabel] = useState<'Home' | 'Office' | 'Other'>('Home');
 
   const handleSaveAddress = async () => {
     if (!addrName.trim() || !addrPhone.trim() || !addrStreet.trim() || !addrPincode.trim()) {
       Alert.alert('Required', 'Please fill all address fields.');
       return;
     }
+    const cleanPhone = addrPhone.replace(/\D/g, '').slice(-10);
+    if (cleanPhone.length !== 10) {
+      Alert.alert('Invalid Phone', 'Please enter a valid 10-digit mobile number.');
+      return;
+    }
     const newAddr: Address = {
       id: `addr_${Date.now()}`,
-      label: 'Home',
+      label: addrLabel,
       fullName: addrName.trim(),
-      phone: addrPhone.trim(),
+      phone: cleanPhone,
       street: addrStreet.trim(),
       city: addrCity.trim(),
       state: 'Tamil Nadu',
@@ -89,7 +61,8 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: topInset }]}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Profile</Text>
       </View>
@@ -117,10 +90,7 @@ export const ProfileScreen = () => {
           {!isAuthenticated ? (
             <TouchableOpacity
               style={styles.signInBtn}
-              onPress={() => {
-                setAuthMode('signin');
-                setAuthModalVisible(true);
-              }}
+              onPress={() => openAuthModal('signin')}
             >
               <LogIn size={16} color="#FFF" />
               <Text style={styles.signInBtnText}>Sign In</Text>
@@ -190,101 +160,6 @@ export const ProfileScreen = () => {
         <Text style={styles.versionText}>VP Nuts Mobile App • Version 1.0.0</Text>
       </ScrollView>
 
-      {/* Auth Modal (Sign In / Sign Up) */}
-      <Modal
-        visible={authModalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setAuthModalVisible(false)}
-      >
-        <SafeAreaView style={styles.modalSafeArea}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>
-              {authMode === 'signin' ? 'Sign In to VP Nuts' : 'Create New Account'}
-            </Text>
-            <TouchableOpacity onPress={() => setAuthModalVisible(false)}>
-              <Text style={styles.modalCloseText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView style={styles.modalContent}>
-            {authMode === 'signup' && (
-              <View style={styles.modalInputGroup}>
-                <Text style={styles.modalInputLabel}>Full Name</Text>
-                <TextInput
-                  style={styles.modalTextInput}
-                  placeholder="Enter your name"
-                  placeholderTextColor="#A09287"
-                  value={name}
-                  onChangeText={setName}
-                />
-              </View>
-            )}
-
-            <View style={styles.modalInputGroup}>
-              <Text style={styles.modalInputLabel}>Email Address</Text>
-              <TextInput
-                style={styles.modalTextInput}
-                placeholder="name@example.com"
-                placeholderTextColor="#A09287"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-
-            {authMode === 'signup' && (
-              <View style={styles.modalInputGroup}>
-                <Text style={styles.modalInputLabel}>Mobile Number</Text>
-                <TextInput
-                  style={styles.modalTextInput}
-                  placeholder="10-digit phone"
-                  placeholderTextColor="#A09287"
-                  keyboardType="phone-pad"
-                  maxLength={10}
-                  value={phone}
-                  onChangeText={setPhone}
-                />
-              </View>
-            )}
-
-            <View style={styles.modalInputGroup}>
-              <Text style={styles.modalInputLabel}>Password</Text>
-              <TextInput
-                style={styles.modalTextInput}
-                placeholder="Enter password (min 6 chars)"
-                placeholderTextColor="#A09287"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </View>
-
-            <TouchableOpacity
-              style={styles.authSubmitBtn}
-              onPress={handleAuthSubmit}
-              disabled={loading}
-            >
-              <Text style={styles.authSubmitBtnText}>
-                {loading ? 'Please wait...' : authMode === 'signin' ? 'Sign In' : 'Create Account'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.switchAuthBtn}
-              onPress={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
-            >
-              <Text style={styles.switchAuthText}>
-                {authMode === 'signin'
-                  ? "Don't have an account? Sign Up"
-                  : 'Already have an account? Sign In'}
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </SafeAreaView>
-      </Modal>
-
       {/* Add Address Modal */}
       <Modal
         visible={addressModalVisible}
@@ -292,7 +167,7 @@ export const ProfileScreen = () => {
         presentationStyle="pageSheet"
         onRequestClose={() => setAddressModalVisible(false)}
       >
-        <SafeAreaView style={styles.modalSafeArea}>
+        <View style={[styles.modalSafeArea, { paddingTop: topInset }]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Add Delivery Address</Text>
             <TouchableOpacity onPress={() => setAddressModalVisible(false)}>
@@ -360,13 +235,30 @@ export const ProfileScreen = () => {
               />
             </View>
 
+            <View style={styles.modalInputGroup}>
+              <Text style={styles.modalInputLabel}>Tag Address As</Text>
+              <View style={styles.labelPillRow}>
+                {(['Home', 'Office', 'Other'] as const).map(lbl => (
+                  <TouchableOpacity
+                    key={lbl}
+                    style={[styles.labelPill, addrLabel === lbl && styles.labelPillActive]}
+                    onPress={() => setAddrLabel(lbl)}
+                  >
+                    <Text style={[styles.labelPillText, addrLabel === lbl && styles.labelPillTextActive]}>
+                      {lbl}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
             <TouchableOpacity style={styles.authSubmitBtn} onPress={handleSaveAddress}>
               <Text style={styles.authSubmitBtnText}>Save Address</Text>
             </TouchableOpacity>
           </ScrollView>
-        </SafeAreaView>
+        </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -603,6 +495,68 @@ const styles = StyleSheet.create({
     color: '#8B4513',
     fontWeight: '700',
   },
+  modalCloseBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: '#F5ECE3',
+  },
+  authScrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 16,
+    paddingBottom: 32,
+  },
+  authCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 18,
+    padding: 22,
+    borderWidth: 1,
+    borderColor: '#EFE7DC',
+    shadowColor: '#4A2E18',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  authBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 18,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5ECE3',
+  },
+  authLogoBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: '#8B4513',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#8B4513',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  authLogoText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  authCardTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#2C1810',
+  },
+  authCardSub: {
+    fontSize: 12,
+    color: '#7A6B60',
+    marginTop: 2,
+    lineHeight: 16,
+  },
   modalContent: {
     flex: 1,
     padding: 16,
@@ -626,6 +580,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2C1810',
   },
+  labelPillRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 4,
+  },
+  labelPill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#FAF5EE',
+    borderWidth: 1,
+    borderColor: '#E8DED1',
+  },
+  labelPillActive: {
+    backgroundColor: '#8B4513',
+    borderColor: '#8B4513',
+  },
+  labelPillText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6A5649',
+  },
+  labelPillTextActive: {
+    color: '#FFF',
+  },
   authSubmitBtn: {
     backgroundColor: '#8B4513',
     borderRadius: 10,
@@ -644,8 +623,12 @@ const styles = StyleSheet.create({
   },
   switchAuthText: {
     fontSize: 13,
+    color: '#8A7A70',
+    fontWeight: '500',
+  },
+  switchAuthBold: {
     color: '#8B4513',
-    fontWeight: '600',
+    fontWeight: '800',
   },
 });
 

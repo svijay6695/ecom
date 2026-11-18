@@ -89,13 +89,7 @@ export function AppNavigator() {
       <Stack.Screen
         name="Checkout"
         component={CheckoutScreen}
-        options={{
-          headerShown: true,
-          headerTitle: 'Checkout',
-          headerTintColor: '#8B4513',
-          headerStyle: { backgroundColor: '#FFFDF9' },
-          headerBackTitle: 'Cart',
-        }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

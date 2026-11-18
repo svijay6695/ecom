@@ -7,10 +7,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  SafeAreaView
+  Platform,
+  StatusBar
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Trash2, Plus, Minus, Tag, ArrowRight, ShoppingBag, CheckCircle, Sparkles } from 'lucide-react-native';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { resolveProductImage } from '../types/product';
 
 export const CartScreen = ({ navigation }: any) => {
@@ -26,8 +29,22 @@ export const CartScreen = ({ navigation }: any) => {
     removePromoCode
   } = useCart();
 
+  const insets = useSafeAreaInsets();
+  const topInset = Math.max(insets.top, Platform.OS === 'android' ? (StatusBar.currentHeight || 24) : 0);
+  const { isAuthenticated, openAuthModal } = useAuth();
+
   const [inputCode, setInputCode] = useState('');
   const [promoMessage, setPromoMessage] = useState<{ text: string; success: boolean } | null>(null);
+
+  const handleProceedToCheckout = () => {
+    if (!isAuthenticated) {
+      openAuthModal('signin', () => {
+        navigation.navigate('Checkout');
+      });
+      return;
+    }
+    navigation.navigate('Checkout');
+  };
 
   const handleApplyPromo = () => {
     if (!inputCode.trim()) return;
@@ -38,7 +55,8 @@ export const CartScreen = ({ navigation }: any) => {
 
   if (cartItems.length === 0) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <View style={[styles.safeArea, { paddingTop: topInset }]}>
+        <StatusBar barStyle="dark-content" />
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconCircle}>
             <ShoppingBag size={48} color="#8B4513" />
@@ -55,12 +73,13 @@ export const CartScreen = ({ navigation }: any) => {
             <ArrowRight size={16} color="#FFF" />
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: topInset }]}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Shopping Cart ({cartItems.length})</Text>
       </View>
@@ -196,13 +215,14 @@ export const CartScreen = ({ navigation }: any) => {
 
         <TouchableOpacity
           style={styles.checkoutBtn}
-          onPress={() => navigation.navigate('Checkout')}
+          onPress={handleProceedToCheckout}
+          activeOpacity={0.8}
         >
           <Text style={styles.checkoutBtnText}>Proceed to Checkout</Text>
           <ArrowRight size={18} color="#FFF" />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -17,7 +17,8 @@ import {
   Printer,
   Copy,
   AlertTriangle,
-  XCircle
+  XCircle,
+  RefreshCw
 } from 'lucide-react';
 import api from '../services/api';
 import './OrdersView.css';
@@ -48,6 +49,10 @@ const OrdersView = () => {
 
   useEffect(() => {
     fetchOrders();
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredOrders = orders.filter(order => {
